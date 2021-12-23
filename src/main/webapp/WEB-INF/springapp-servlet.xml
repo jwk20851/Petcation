@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans
+xmlns="http://www.springframework.org/schema/beans"
+xmlns:context="http://www.springframework.org/schema/context"
+xmlns:jee="http://www.springframework.org/schema/jee"		
+xmlns:p="http://www.springframework.org/schema/p"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.springframework.org/schema/beans
+http://www.springframework.org/schema/beans/spring-beans.xsd
+http://www.springframework.org/schema/context
+http://www.springframework.org/schema/context/spring-context.xsd
+http://www.springframework.org/schema/jee
+http://www.springframework.org/schema/jee/spring-jee.xsd"
+
+>
+	<bean name = "/anotice_insert_form.bo" class = "org.springframework.web.servlet.mvc.ParameterizableViewController">
+		<property name="viewName" value = "writeANotice"	></property>
+	</bean>
+	<bean name = "/review_insert_form.bo" class = "org.springframework.web.servlet.mvc.ParameterizableViewController">
+		<property name="viewName" value = "writeForm"	></property>
+	</bean>
+	<bean name = "/mtm_insert_form.bo" class = "org.springframework.web.servlet.mvc.ParameterizableViewController">
+		<property name="viewName" value = "writeMTM"	></property>
+	</bean>
+	<bean name = "/afaq_insert_form.bo" class = "org.springframework.web.servlet.mvc.ParameterizableViewController">
+		<property name="viewName" value = "writeAFAQ"	></property>
+	</bean>
+
+	<context:component-scan base-package="controller"></context:component-scan>
+	<context:component-scan base-package="service"></context:component-scan>
+	<context:component-scan base-package="dao"></context:component-scan>
+	<context:property-placeholder location = "classpath:config/jdbc1.properties"/><!-- 외부경로 -->
+	
+	<bean id = "jdbcTemplate" class = "org.springframework.jdbc.core.JdbcTemplate">
+		<constructor-arg ref = "dataSource"></constructor-arg>
+	</bean>
+	<!-- 1.Connection Pool을 지원하지 않는 형태 -->
+	<!-- <bean id = "dataSource" class = "org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value = "${jdbc.driver}"></property>
+		<property name="url" value = "${jdbc.url}"></property>
+		<property name="username" value = "${jdbc.username}"></property>
+		<property name="password" value = "${jdbc.password}"></property>
+	</bean> -->
+	
+	<!-- 2.DBCP를 사용해서 Connection Pool을 사용하는 형태 -->
+	<!-- <bean id = "dataSource" class = "org.apache.commons.dbcp.BasicDataSource">
+		<property name="driverClassName" value = "${jdbc.driver}"></property>
+		<property name="url" value = "${jdbc.url}"></property>
+		<property name="username" value = "${jdbc.username}"></property>
+		<property name="password" value = "${jdbc.password}"></property>
+	</bean> -->
+	
+	<!-- 3. 서버의 jndi를 사용해서 Connection Pool을 지원하는 방식 -->
+	<!-- <bean id = "dataSource" class = "org.springframework.jndi.JndiObjectFactoryBean">
+		<property name = "jndiName" value = "jdbc/jsptest"></property>
+		<property name="resourceRef" value = "true"></property>
+	</bean> -->
+	<!-- resourceRef : java:comp/env의 JNDI를 사용할 수 있도록 설정하는 부분 -->
+	
+	<!-- 4. jee:jndi-lookup 사용-->
+	<jee:jndi-lookup jndi-name="/jdbc/jsptest" id = "dataSource"	
+	resource-ref = "true"></jee:jndi-lookup>	<!-- resource-ref = "true" 설정해야함.-->
+	
+	
+	<!-- InternalResourceViewResolver : 웹자원(주로JSP)을 이용해서 뷰페이지를 생성하는 리졸버 -->
+	<bean id = "viewResolver" class = "org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name = "prefix" value = "/board/"></property>
+		<property name = "suffix" value = ".jsp"></property>
+	</bean>
+	<!-- 
+	포워딩될 URL : /view/hello.jsp
+	 -->
+</beans>
